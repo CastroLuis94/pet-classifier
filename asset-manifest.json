@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/CastroLuis94.github.io/pet-classifier/static/css/main.c9779162.css",
-    "main.js": "/CastroLuis94.github.io/pet-classifier/static/js/main.a51d2ade.js",
-    "index.html": "/CastroLuis94.github.io/pet-classifier/index.html",
-    "main.c9779162.css.map": "/CastroLuis94.github.io/pet-classifier/static/css/main.c9779162.css.map",
-    "main.a51d2ade.js.map": "/CastroLuis94.github.io/pet-classifier/static/js/main.a51d2ade.js.map"
+    "main.css": "/pet-classifier/static/css/main.c9779162.css",
+    "main.js": "/pet-classifier/static/js/main.6b962ebe.js",
+    "index.html": "/pet-classifier/index.html",
+    "main.c9779162.css.map": "/pet-classifier/static/css/main.c9779162.css.map",
+    "main.6b962ebe.js.map": "/pet-classifier/static/js/main.6b962ebe.js.map"
   },
   "entrypoints": [
     "static/css/main.c9779162.css",
-    "static/js/main.a51d2ade.js"
+    "static/js/main.6b962ebe.js"
   ]
 }
