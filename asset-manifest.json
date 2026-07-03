@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/pet-classifier/static/css/main.c9779162.css",
-    "main.js": "/pet-classifier/static/js/main.6b962ebe.js",
+    "main.js": "/pet-classifier/static/js/main.e42fe161.js",
     "index.html": "/pet-classifier/index.html",
     "main.c9779162.css.map": "/pet-classifier/static/css/main.c9779162.css.map",
-    "main.6b962ebe.js.map": "/pet-classifier/static/js/main.6b962ebe.js.map"
+    "main.e42fe161.js.map": "/pet-classifier/static/js/main.e42fe161.js.map"
   },
   "entrypoints": [
     "static/css/main.c9779162.css",
-    "static/js/main.6b962ebe.js"
+    "static/js/main.e42fe161.js"
   ]
 }
