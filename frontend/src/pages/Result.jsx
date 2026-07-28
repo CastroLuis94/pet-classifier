@@ -1,26 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Image, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Camera, Image } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Result({ result, image }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (!result || !image) {
     return (
       <div className="gradient-bg permission-container" data-testid="result-no-data">
-        <h2 className="permission-title">Sin resultados</h2>
-        <p className="permission-text">No hay ninguna clasificación para mostrar</p>
+        <h2 className="permission-title">{t('no_results_title')}</h2>
+        <p className="permission-text">{t('no_results_desc')}</p>
         <button 
           className="btn-primary"
           onClick={() => navigate('/')}
         >
-          Volver al Inicio
+          {t('back_to_home')}
         </button>
       </div>
     );
   }
 
-  const isPerro = result.prediction === 'Perro';
+  // Normalizamos la predicción por si viene en español ('Perro'/'Gato') o inglés ('dog'/'cat')
+  const predictionNormalized = result.prediction.toLowerCase();
+  const isDog = predictionNormalized === 'perro' || predictionNormalized === 'dog';
+  
+  // Obtenemos la traducción correcta según la clave 'dog' o 'cat'
+  const translatedPrediction = isDog ? t('dog') : t('cat');
 
   return (
     <div className="gradient-bg" style={{ minHeight: '100vh' }} data-testid="result-page">
@@ -41,7 +48,7 @@ export default function Result({ result, image }) {
           <ArrowLeft size={28} color="#2C5F7F" />
         </button>
         <span style={{ fontSize: '20px', fontWeight: '700', color: '#2C5F7F' }}>
-          Resultado
+          {t('result_title')}
         </span>
         <div style={{ width: 48 }}></div>
       </div>
@@ -69,27 +76,27 @@ export default function Result({ result, image }) {
 
         {/* Result Card */}
         <div className="card" style={{ 
-          background: isPerro 
+          background: isDog 
             ? 'linear-gradient(135deg, #4A90E2, #5C6BC0)' 
             : 'linear-gradient(135deg, #FF7043, #FF5722)',
           color: 'white',
           marginBottom: '24px'
         }}>
           <div style={{ fontSize: '64px', marginBottom: '8px' }}>
-            {isPerro ? '🐕' : '🐱'}
+            {isDog ? '🐕' : '🐱'}
           </div>
           <h2 style={{ 
             fontSize: '36px', 
             fontWeight: '800',
             marginBottom: '8px'
           }} data-testid="result-prediction">
-            {result.prediction}
+            {translatedPrediction}
           </h2>
           <p style={{ 
             fontSize: '18px',
             opacity: 0.9
           }} data-testid="result-confidence">
-            {result.confidence.toFixed(1)}% de confianza
+            {t('confidence_label', { percent: result.confidence.toFixed(1) })}
           </p>
         </div>
 
@@ -107,7 +114,7 @@ export default function Result({ result, image }) {
             data-testid="take-another-photo-btn"
           >
             <Camera size={20} />
-            Tomar otra foto
+            {t('take_another_photo')}
           </button>
           <button 
             className="btn-secondary"
@@ -116,17 +123,17 @@ export default function Result({ result, image }) {
             data-testid="select-from-gallery-btn"
           >
             <Image size={20} />
-            Galería
+            {t('gallery')}
           </button>
         </div>
 
-        {/* Raw Score (for debugging) */}
+        {/* Raw Score (debug) */}
         <p style={{ 
           marginTop: '32px', 
           color: '#7FA8C2', 
           fontSize: '12px' 
         }}>
-          Score raw: {result.raw_score}
+          {t('raw_score', { score: result.raw_score })}
         </p>
       </div>
     </div>

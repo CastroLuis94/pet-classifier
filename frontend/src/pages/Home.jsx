@@ -1,30 +1,32 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Image, Clock, Code } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  // Opciones de entrada principales
+  // Opciones de entrada principales adaptadas con t()
   const mainOptions = [
     {
       icon: Camera,
-      title: 'Tomar Foto',
-      description: 'Captura una imagen con la cámara',
+      title: t('take_photo'),
+      description: t('take_photo_desc'),
       path: '/camera',
       testId: 'take-photo-btn'
     },
     {
       icon: Image,
-      title: 'Galería',
-      description: 'Selecciona una foto de tu galería',
+      title: t('gallery'),
+      description: t('gallery_desc'),
       path: '/gallery',
       testId: 'gallery-btn'
     }
   ];
 
   return (
-    <div className="gradient-bg" data-testid="home-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+    <div className="gradient-bg" data-testid="home-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative' }}>
       <div className="container" style={{ paddingTop: '40px', paddingBottom: '40px', width: '100%' }}>
         
         {/* Header con Animación Sutil */}
@@ -65,7 +67,7 @@ export default function Home() {
             color: '#5A8DAD',
             fontWeight: '500'
           }}>
-            ¿Es un perro o un gato? Elige un método de inferencia on-device.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -145,10 +147,10 @@ export default function Home() {
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#2C5F7F', marginBottom: '2px' }}>
-                Historial de Clasificaciones
+                {t('history')}
               </h3>
               <p style={{ fontSize: '13px', color: '#7FA8C2' }}>
-                Revisá las últimas fotos analizadas en esta sesión local
+                {t('history_desc')}
               </p>
             </div>
           </button>

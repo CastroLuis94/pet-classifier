@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera as CameraIcon, RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useClassifier } from '../hooks/useClassifier';
 
 export default function CameraPage({ setCapturedImage, setClassificationResult }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  
   const [hasPermission, setHasPermission] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [facingMode, setFacingMode] = useState('environment');
@@ -12,7 +15,7 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const streamRef = useRef(null); // Almacenamos el stream en un ref para evitar re-renderizados cíclicos
+  const streamRef = useRef(null); // Ref para evitar re-renderizados cíclicos
   
   const { isModelLoaded, isLoading: isModelLoading, loadingProgress, classifyFromCanvas } = useClassifier();
 
@@ -29,7 +32,7 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
       stopStream();
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Tu navegador no soporta acceso a cámara');
+        throw new Error(t('camera_not_supported') || 'Tu navegador no soporta acceso a la cámara');
       }
 
       const constraints = {
@@ -61,11 +64,10 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
     } catch (error) {
       console.error('Camera error:', error);
       setHasPermission(false);
-      setError(error.message || 'No se pudo acceder a la cámara.');
+      setError(error.message || t('camera_access_error') || 'No se pudo acceder a la cámara.');
     }
-  }, [stopStream]);
+  }, [stopStream, t]);
 
-  // Se ejecuta al montar el componente de forma limpia
   useEffect(() => {
     startCamera(facingMode);
     return () => stopStream();
@@ -98,7 +100,7 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
         setCapturedImage(fullBase64Image);
         setClassificationResult(result);
         
-        // Guardado persistente en la sesión local
+        // Guardado en sessionStorage
         try {
           const currentHistory = JSON.parse(sessionStorage.getItem("pet_history") || "[]");
           const newEntry = {
@@ -119,7 +121,7 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
       }
     } catch (error) {
       console.error('Error taking picture:', error);
-      alert('Error al clasificar la imagen de la cámara.');
+      alert(t('camera_classification_error') || 'Error al clasificar la imagen de la cámara.');
     } finally {
       setIsProcessing(false);
     }
@@ -134,7 +136,9 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
     return (
       <div className="gradient-bg permission-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
         <div className="loading-spinner"></div>
-        <p style={{ marginTop: '16px', color: '#5A8DAD' }}>Cargando modelo de IA... {loadingProgress}%</p>
+        <p style={{ marginTop: '16px', color: '#5A8DAD' }}>
+          {t('loading_model') || 'Cargando modelo de IA...'} {loadingProgress}%
+        </p>
       </div>
     );
   }
@@ -143,7 +147,9 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
     return (
       <div className="gradient-bg permission-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
         <div className="loading-spinner"></div>
-        <p style={{ marginTop: '16px', color: '#5A8DAD' }}>Accediendo a la cámara...</p>
+        <p style={{ marginTop: '16px', color: '#5A8DAD' }}>
+          {t('accessing_camera') || 'Accediendo a la cámara...'}
+        </p>
       </div>
     );
   }
@@ -152,9 +158,11 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
     return (
       <div className="gradient-bg permission-container" style={{textAlign: 'center', padding: '20px'}}>
         <CameraIcon size={80} color="#4A90E2" />
-        <h2>Permiso de Cámara</h2>
-        <p>{error || 'Necesitamos acceso a tu cámara para capturar fotos.'}</p>
-        <button className="btn-primary" onClick={() => startCamera(facingMode)}>Reintentar</button>
+        <h2>{t('camera_permission_title') || 'Permiso de Cámara'}</h2>
+        <p>{error || t('camera_permission_desc') || 'Necesitamos acceso a tu cámara para capturar fotos.'}</p>
+        <button className="btn-primary" onClick={() => startCamera(facingMode)}>
+          {t('retry') || 'Reintentar'}
+        </button>
       </div>
     );
   }
@@ -172,13 +180,19 @@ export default function CameraPage({ setCapturedImage, setClassificationResult }
 
       <div className="camera-overlay" style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
         <div className="camera-top-bar" style={{padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)'}}>
-          <button className="back-button" onClick={handleBack} style={{background: 'none', border: 'none'}}><ArrowLeft size={28} color="white" /></button>
-          <span className="page-title" style={{color: 'white', fontWeight: 'bold'}}>Capturar Foto</span>
-          <button className="back-button" onClick={switchCamera} style={{background: 'none', border: 'none'}}><RefreshCw size={24} color="white" /></button>
+          <button className="back-button" onClick={handleBack} style={{background: 'none', border: 'none', cursor: 'pointer'}}>
+            <ArrowLeft size={28} color="white" />
+          </button>
+          <span className="page-title" style={{color: 'white', fontWeight: 'bold'}}>
+            {t('capture_photo') || 'Capturar Foto'}
+          </span>
+          <button className="back-button" onClick={switchCamera} style={{background: 'none', border: 'none', cursor: 'pointer'}}>
+            <RefreshCw size={24} color="white" />
+          </button>
         </div>
 
         <div style={{alignSelf: 'center', background: 'rgba(0, 200, 83, 0.9)', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', color: 'white', fontWeight: '600'}}>
-          ✓ IA en CPU local activa
+          ✓ {t('local_ia_active') || 'IA en CPU local activa'}
         </div>
 
         <div className="camera-bottom-bar" style={{padding: '40px', display: 'flex', justifyContent: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)'}}>

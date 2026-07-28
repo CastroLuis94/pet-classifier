@@ -1,9 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useClassifier } from '../hooks/useClassifier';
+import { saveToHistory } from '../services/api';
 
 export default function Gallery({ setCapturedImage, setClassificationResult }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,35 +31,42 @@ export default function Gallery({ setCapturedImage, setClassificationResult }) {
     try {
       setIsProcessing(true);
       
-      // 1. Clasifica usando el modelo local (TensorFlow.js)
+      // 1. Clasifica usando el modelo local
       const result = await classifyFromBase64(selectedImage);
       
       // 2. Guardamos en los estados globales para la pantalla /result
       setCapturedImage(selectedImage);
       setClassificationResult(result);
 
-      // 3. ¡EL PARCHE CLAVE! Guardamos la clasificación de la galería en la sesión local
+      const newEntry = {
+        id: Date.now(),
+        image: selectedImage,
+        prediction: result.prediction || "Sin clasificar",
+        confidence: result.confidence || 0,
+        timestamp: new Date().toISOString(),
+      };
+
+      // 3. Persistir localmente en sessionStorage (fallback rápido)
       try {
         const currentHistory = JSON.parse(sessionStorage.getItem("pet_history") || "[]");
-        const newEntry = {
-          id: Date.now(),
-          image: selectedImage,
-          prediction: result.prediction || "Sin clasificar",
-          confidence: result.confidence || 0,
-          timestamp: new Date().toISOString(),
-        };
         const updatedHistory = [newEntry, ...currentHistory].slice(0, 20);
         sessionStorage.setItem("pet_history", JSON.stringify(updatedHistory));
-        console.log("Guardado en historial de sesión desde Galería con éxito");
       } catch (e) {
-        console.error('Error al guardar galería en sessionStorage:', e);
+        console.error('Error al guardar en sessionStorage:', e);
       }
 
-      // 4. Navegamos al resultado
+      // 4. Intentar persistir en el backend/MongoDB sin bloquear el flujo si falla
+      try {
+        await saveToHistory(newEntry);
+      } catch (apiErr) {
+        console.warn('El backend no respondió, se usó solo almacenamiento local:', apiErr);
+      }
+
+      // 5. Navegamos al resultado
       navigate('/result');
     } catch (error) {
-      console.error('Error classifying image:', error);
-      alert('Error al clasificar la imagen. Por favor, intenta de nuevo.');
+      console.error('Error en la clasificación:', error);
+      alert(t('gallery_classification_error') || 'Error al clasificar la imagen. Por favor, intenta de nuevo.');
     } finally {
       setIsProcessing(false);
     }
@@ -67,7 +77,7 @@ export default function Gallery({ setCapturedImage, setClassificationResult }) {
       <div className="gradient-bg permission-container">
         <div className="loading-spinner"></div>
         <p style={{ marginTop: '16px', color: '#5A8DAD' }}>
-          Cargando modelo de IA... {loadingProgress}%
+          {t('loading_model') || 'Cargando modelo de IA...'} {loadingProgress}%
         </p>
       </div>
     );
@@ -82,10 +92,12 @@ export default function Gallery({ setCapturedImage, setClassificationResult }) {
         padding: '20px',
         background: 'linear-gradient(to bottom, rgba(135, 206, 235, 0.9), transparent)'
       }}>
-        <button className="back-button" onClick={() => navigate('/')}>
+        <button className="back-button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
           <ArrowLeft size={28} color="#2C5F7F" />
         </button>
-        <span style={{ fontSize: '20px', fontWeight: '700', color: '#2C5F7F' }}>Galería</span>
+        <span style={{ fontSize: '20px', fontWeight: '700', color: '#2C5F7F' }}>
+          {t('gallery') || 'Galería'}
+        </span>
         <div style={{ width: 48 }}></div>
       </div>
 
@@ -93,20 +105,20 @@ export default function Gallery({ setCapturedImage, setClassificationResult }) {
         {selectedImage ? (
           <div style={{ textAlign: 'center' }}>
             <img src={selectedImage} alt="Selected" className="gallery-preview" />
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '16px' }}>
               <button className="btn-secondary" onClick={() => setSelectedImage(null)}>
-                Otra foto
+                {t('another_photo') || 'Otra foto'}
               </button>
               <button className="btn-primary" onClick={classifyImage} disabled={isProcessing}>
-                {isProcessing ? 'Clasificando...' : 'Clasificar'}
+                {isProcessing ? (t('classifying') || 'Clasificando...') : (t('classify') || 'Clasificar')}
               </button>
             </div>
           </div>
         ) : (
-          <div className="upload-area" onClick={() => fileInputRef.current?.click()}>
+          <div className="upload-area" onClick={() => fileInputRef.current?.click()} style={{ cursor: 'pointer' }}>
             <Upload size={60} color="#4A90E2" />
-            <h3>Seleccionar imagen</h3>
-            <p>Toca para elegir una foto</p>
+            <h3>{t('select_image') || 'Seleccionar imagen'}</h3>
+            <p>{t('drag_drop') || 'Toca o arrastra para elegir una foto'}</p>
           </div>
         )}
         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />

@@ -34,12 +34,15 @@ export function useClassifier() {
           await tf.ready();
           console.log('TensorFlow.js backend inicializado en:', tf.getBackend());
 
-          const model = await tf.loadLayersModel('/model/model.json', {
+          // Combinamos la variable de entorno para heredar la subcarpeta con tu ruta del modelo
+          const modelUrl = `${process.env.PUBLIC_URL}/model/model.json`;
+
+          const model = await tf.loadLayersModel(modelUrl, {
             onProgress: (fraction) => {
               setLoadingProgress(Math.round(10 + fraction * 80));
             }
           });
-          
+                    
           setLoadingProgress(90);
           
           const dummyInput = tf.zeros([1, 100, 100, 1]);

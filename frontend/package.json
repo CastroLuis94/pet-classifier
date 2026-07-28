@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "homepage": "http://luiscastro.com.ar/pet-classifier/",
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -39,6 +40,8 @@
     "cra-template": "1.2.0",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "i18next": "^26.3.6",
+    "i18next-browser-languagedetector": "^8.2.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.7.0",
     "next-themes": "^0.4.6",
@@ -46,6 +49,7 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.2",
+    "react-i18next": "^17.0.11",
     "react-resizable-panels": "^3.0.1",
     "react-router-dom": "^7.5.1",
     "react-scripts": "^5.0.1",
@@ -57,9 +61,12 @@
     "zod": "^3.24.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "eject": "craco eject"
   },
   "browserslist": {
     "production": [
@@ -86,6 +93,7 @@
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.2.0",
+    "gh-pages": "^6.3.0",
     "globals": "15.15.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17"
