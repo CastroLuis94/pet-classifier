@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/pet-classifier/static/css/main.c9779162.css",
-    "main.js": "/pet-classifier/static/js/main.e42fe161.js",
+    "main.css": "/pet-classifier/static/css/main.189e248f.css",
+    "main.js": "/pet-classifier/static/js/main.5585bdd8.js",
     "index.html": "/pet-classifier/index.html",
-    "main.c9779162.css.map": "/pet-classifier/static/css/main.c9779162.css.map",
-    "main.e42fe161.js.map": "/pet-classifier/static/js/main.e42fe161.js.map"
+    "main.189e248f.css.map": "/pet-classifier/static/css/main.189e248f.css.map",
+    "main.5585bdd8.js.map": "/pet-classifier/static/js/main.5585bdd8.js.map"
   },
   "entrypoints": [
-    "static/css/main.c9779162.css",
-    "static/js/main.e42fe161.js"
+    "static/css/main.189e248f.css",
+    "static/js/main.5585bdd8.js"
   ]
 }
